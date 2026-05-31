@@ -1,21 +1,19 @@
 <template>
   <section class="bg-[#EFE6D7] py-18">
-    <!-- Уменьшаем отступы по бокам -->
-    <div class="max-w-350 mx-auto px-4 sm:px-6 lg:px-4">
+    <!-- items-center выравнивает детей по горизонтали, gap заменяет фиксированные mb-* -->
+    <div class="max-w-350 mx-auto px-4 sm:px-6 flex flex-col items-center justify-center gap-3 md:gap-5">
 
-      <h1 class="text-4xl md:text-5xl font-light text-center mb-8 md:mb-12 font-['Tenor_Sans'] text-[#142C12] tracking-wide">
+      <h1 class="text-4xl md:text-5xl font-light text-center font-['Tenor_Sans'] text-[#142C12] tracking-wide">
         Услуги
       </h1>
 
-      <!-- Параграф на всю ширину карточек -->
-      <article class="text-center mb-10 md:mb-16">
-        <p class="font-['Montserrat'] text-[#142C12] text-base md:text-lg leading-relaxed max-w-4xl mx-auto">
+      <article class="text-center">
+        <p class="font-['Montserrat'] text-[#142C12] text-base md:text-lg leading-relaxed max-w-4xl">
           Санаторий "Чистый Воздух" предлагает широкий спектр услуг, направленных на восстановление здоровья и общее оздоровление гостей. Мы создаем комфортные условия для отдыха и лечения, сочетая современные технологии с природными ресурсами.
         </p>
       </article>
 
-      <!-- Контейнер карточек с минимальными отступами -->
-      <div class="flex overflow-x-auto snap-x snap-mandatory gap-3 sm:gap-4 pb-6 lg:grid lg:grid-cols-4 lg:gap-4 lg:overflow-visible lg:pb-0 lg:flex-none scrollbar-hide scroll-pl-4 sm:scroll-pl-6">
+      <div class="flex overflow-x-auto snap-x snap-mandatory gap-3 sm:gap-4 pb-6 lg:grid lg:grid-cols-4 lg:gap-4 lg:overflow-visible lg:pb-0 lg:flex-none scrollbar-hide scroll-pl-4 sm:scroll-pl-6 w-full">
         <ServicesCard
           v-for="(item, index) in items"
           :key="index"
@@ -25,6 +23,13 @@
           class="snap-center shrink-0 w-[85vw] sm:w-[70vw] md:w-[55vw] lg:w-full"/>
       </div>
 
+      <!-- Кнопка: w-fit делает ширину по тексту, px-2 минимальный отступ, justify-center в родителе выравнивает по бокам через flex -->
+      <router-link
+        to="/#contacts"
+        class="md:inline-flex w-fit items-center justify-center bg-[#777C5C] text-[#EFE6D7] py-2.5 px-2 rounded-lg transition-all duration-300 shadow-sm hover:shadow-md hover:bg-[#6a6f52] font-medium font-[Tenor_Sans] whitespace-nowrap"
+      >
+        Забронировать отдых
+      </router-link>
     </div>
   </section>
 </template>
