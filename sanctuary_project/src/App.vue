@@ -2,9 +2,11 @@
 import Header from "@/components/Header.vue";
 import HeroSection from "@/components/HeroSection.vue";
 import About from "@/components/About.vue";
-import ServicesCard from "@/components/ServicesCard.vue";
 import Services from "@/components/Services.vue";
 import Doctors from "@/components/Doctors.vue";
+import Rooms from "@/components/Rooms.vue";
+import BookingForm from "@/components/BookingForm.vue";
+
 </script>
 
 <template>
@@ -14,6 +16,8 @@ import Doctors from "@/components/Doctors.vue";
     <About></About>
     <Services></Services>
     <Doctors></Doctors>
+    <Rooms></Rooms>
+    <BookingForm></BookingForm>
     <main class="grow">
       <router-view />
     </main>

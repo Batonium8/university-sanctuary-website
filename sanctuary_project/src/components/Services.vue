@@ -1,7 +1,7 @@
 <template>
   <section class="bg-[#EFE6D7] py-18">
     <!-- items-center выравнивает детей по горизонтали, gap заменяет фиксированные mb-* -->
-    <div class="max-w-350 mx-auto px-4 sm:px-6 flex flex-col items-center justify-center gap-3 md:gap-5">
+    <div class="max-w-350 mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center gap-3 md:gap-5">
 
       <h1 class="text-4xl md:text-5xl font-light text-center font-['Tenor_Sans'] text-[#142C12] tracking-wide">
         Услуги

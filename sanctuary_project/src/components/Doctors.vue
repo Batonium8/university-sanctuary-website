@@ -1,6 +1,6 @@
 <template>
   <section class="bg-[#EFE6D7] py-18">
-    <div class="max-w-350 mx-auto px-4 sm:px-6 lg:px-4 flex flex-col items-center">
+    <div class="max-w-350 mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
 
       <h1 class="text-4xl md:text-5xl font-light text-center font-['Tenor_Sans'] text-[#142C12] tracking-wide mb-8 md:mb-12">
         Медицинский персонал
