@@ -5,30 +5,28 @@
   >
     <div class="container mx-auto px-5 md:px-8 py-4 md:py-5 flex items-center justify-between lg:text-lg xl:text-xl">
 
-      <!-- Логотип (появляется только на мобильных, замените на свой <img> или текст) -->
-      <router-link to="/" class="text-xl font-bold text-[#142C12] md:hidden">
+      <a href="/" @click.prevent="navigate('/')" class="text-xl font-bold text-[#142C12] md:hidden">
         Чистый воздух
-      </router-link>
-
-      <!-- Десктопная навигация -->
+      </a>
       <nav aria-label="Главное меню" class="hidden md:flex items-center gap-12 lg:gap-20 ">
-        <router-link
+        <a
           v-for="link in navLinks"
           :key="link.path"
-          :to="link.path"
-          class="text-[#142C12] hover:text-[#31542D] transition-colors duration-300 font-medium tracking-wide"
-          active-class="text-[#31542D] font-semibold"
+          :href="link.path"
+          @click.prevent="navigate(link.path)"
+          class="text-[#142C12] hover:text-[#31542D] transition-colors duration-300 font-medium tracking-wide cursor-pointer"
         >
           {{ link.name }}
-        </router-link>
+        </a>
       </nav>
 
-      <router-link
-        to="/#contacts"
-        class="hidden md:inline-flex items-center justify-center bg-[#777C5C] text-[#EFE6D7] px-6 py-2.5 rounded-lg transition-all duration-300 shadow-sm hover:shadow-md hover:bg-[#6a6f52] font-medium"
+      <a
+        href="#bookings"
+        @click.prevent="navigate('#bookings')"
+        class="hidden md:inline-flex items-center justify-center bg-[#777C5C] text-[#EFE6D7] px-6 py-2.5 rounded-lg transition-all duration-300 shadow-sm hover:shadow-md hover:bg-[#6a6f52] font-medium cursor-pointer"
       >
         Записаться
-      </router-link>
+      </a>
 
       <button
         class="md:hidden p-2 text-[#142C12] hover:text-[#31542D] transition-colors duration-300"
@@ -50,42 +48,80 @@
   <Transition name="mobile-menu">
     <div v-if="mobileMenuOpen" class="fixed inset-0 z-40 bg-[#EFE6D7] pt-28 px-6 md:hidden">
       <nav class="flex flex-col gap-4">
-        <router-link
+        <a
           v-for="link in navLinks"
           :key="link.path"
-          :to="link.path"
-          class="text-2xl font-medium text-[#142C12] hover:text-[#31542D] border-b border-[#142C12]/10 pb-4"
-          @click="mobileMenuOpen = false"
+          :href="link.path"
+          @click.prevent="navigate(link.path); mobileMenuOpen = false"
+          class="text-2xl font-medium text-[#142C12] hover:text-[#31542D] border-b border-[#142C12]/10 pb-4 cursor-pointer"
         >
           {{ link.name }}
-        </router-link>
+        </a>
       </nav>
 
-      <router-link
-        to="/#contacts"
-        class="mt-6 w-full inline-flex items-center justify-center bg-[#777C5C] text-[#EFE6D7] px-6 py-3 rounded-lg font-medium text-lg shadow-sm hover:bg-[#6a6f52] transition-colors duration-300"
-        @click="mobileMenuOpen = false"
+      <a
+        href="#bookings"
+        @click.prevent="navigate('#bookings'); mobileMenuOpen = false"
+        class="mt-6 w-full inline-flex items-center justify-center bg-[#777C5C] text-[#EFE6D7] px-6 py-3 rounded-lg font-medium text-lg shadow-sm hover:bg-[#6a6f52] transition-colors duration-300 cursor-pointer"
       >
         Записаться
-      </router-link>
+      </a>
     </div>
   </Transition>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
+const route = useRoute()
+const router = useRouter()
 const isScrolled = ref(false)
 const mobileMenuOpen = ref(false)
 
 const navLinks = ref([
-  { name: 'О нас', path: '/about' },
-  { name: 'Услуги', path: '/services' },
-  { name: 'Номера', path: '/houses' },
-  { name: 'Бронь', path: '/bookings' },
-  { name: 'Вопросы', path: '/questions' }
-
+  { name: 'О нас', path: '#about' },
+  { name: 'Услуги', path: '#services' },
+  { name: 'Номера', path: '#rooms' },
+  { name: 'Бронь', path: '#bookings' },
+  { name: 'Вопросы', path: '#faq' }
 ])
+
+// Плавный скролл к секции
+const scrollToSection = (href) => {
+  if (href === '/') return
+
+  const id = href.replace('#', '')
+  const element = document.getElementById(id)
+
+  if (element) {
+    const offset = 100
+    const top = element.getBoundingClientRect().top + window.pageYOffset - offset
+    window.scrollTo({ top, behavior: 'smooth' })
+  }
+}
+
+// Универсальная навигация
+const navigate = (href) => {
+  // Сначала ищем элемент на ТЕКУЩЕЙ странице
+  const id = href.replace('#', '')
+  const element = document.getElementById(id)
+
+  if (element) {
+    // Нашли на текущей странице — просто скроллим
+    const offset = 100
+    const top = element.getBoundingClientRect().top + window.pageYOffset - offset
+    window.scrollTo({ top, behavior: 'smooth' })
+  } else if (route.path !== '/') {
+    // Не нашли и не на главной — переходим на главную и там скроллим
+    router.push('/').then(() => {
+      setTimeout(() => scrollToSection(href), 150)
+    })
+  } else {
+    // На главной, но элемент не найден — просто скроллим (на всякий случай)
+    scrollToSection(href)
+  }
+}
 
 watch(mobileMenuOpen, (isOpen) => {
   document.body.style.overflow = isOpen ? 'hidden' : ''
@@ -94,13 +130,19 @@ watch(mobileMenuOpen, (isOpen) => {
 const handleScroll = () => {
   isScrolled.value = window.scrollY > 40
 }
+
 onMounted(() => {
   window.addEventListener('scroll', handleScroll, { passive: true })
+
+  // Если пришли с якорем в URL
+  if (route.hash) {
+    setTimeout(() => scrollToSection(route.hash), 150)
+  }
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
-  document.body.style.overflow = '' // Очистка при размонтировании
+  document.body.style.overflow = ''
 })
 </script>
 

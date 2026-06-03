@@ -1,12 +1,10 @@
 <template>
-  <section class="bg-[#EFE6D7] py-12 md:py-16 px-4 sm:px-6 lg:px-8">
+  <section class="bg-[#EFE6D7] py-12 md:py-16 px-4 sm:px-6 lg:px-8" id="faq">
     <div class="max-w-6xl mx-auto">
-      <!-- Заголовок -->
       <h2 class="text-3xl md:text-4xl lg:text-[42px] font-light text-center font-['Tenor_Sans'] text-[#142C12] tracking-wide mb-8 md:mb-12">
         Часто задаваемые вопросы
       </h2>
 
-      <!-- Аккордеон -->
       <div class="flex flex-col gap-3 md:gap-4">
         <div
           v-for="(item, index) in faqItems"
@@ -14,7 +12,6 @@
           class="border-2 border-[#142C12] rounded-lg overflow-hidden"
           :class="{ 'bg-[#142C12]/5': openIndexes.includes(index) }"
         >
-          <!-- Кнопка вопроса -->
           <button
             @click="toggleQuestion(index)"
             class="w-full flex items-center justify-between px-5 md:px-8 py-4 md:py-5 text-left cursor-pointer"
@@ -30,7 +27,6 @@
             </span>
           </button>
 
-          <!-- Ответ -->
           <div
             class="overflow-hidden transition-all duration-300 ease-in-out"
             :style="{

@@ -1,6 +1,5 @@
 <template>
   <div class="flex flex-col md:flex-row rounded-lg overflow-hidden mb-6 min-h-[280px]">
-    <!-- Изображение (всегда слева) -->
     <div class="flex-shrink-0 md:w-[35%] min-h-[200px] md:min-h-[280px] object-cover">
       <img
         :src="imageUrl"
@@ -9,7 +8,6 @@
       />
     </div>
 
-    <!-- Контент -->
     <div class="flex-1 p-6 md:p-10 flex flex-col justify-between bg-[#777C5C] text-[#EFE6D7]">
       <div>
         <h3 class="text-3xl font-normal mb-4 font-['Tenor_Sans']">{{ title }}</h3>

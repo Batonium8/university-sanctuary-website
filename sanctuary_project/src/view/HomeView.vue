@@ -15,7 +15,9 @@ import BookingForm from "@/components/BookingForm.vue";
   <Services></Services>
   <Doctors></Doctors>
   <Rooms></Rooms>
-  <BookingForm></BookingForm>
+  <div id="bookings">
+    <BookingForm></BookingForm>
+  </div>
   <FAQ></FAQ>
 </template>
 

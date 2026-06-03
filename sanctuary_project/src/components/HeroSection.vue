@@ -1,6 +1,5 @@
 <template>
   <section class="relative min-h-dvh flex items-center justify-center overflow-hidden">
-    <!-- Фоновое изображение -->
     <img
       :src="hero.bgImage"
       alt=""
@@ -10,10 +9,8 @@
       decoding="async"
     />
 
-    <!-- Затемнение для контраста -->
     <div class="absolute inset-0 z-10 bg-[#EFE6D7BA]"></div>
 
-    <!-- Текстовый блок -->
     <div class="relative z-20 text-center text-[#142C12] px-4 md:px-8 py-12 flex flex-col items-center gap-4 md:gap-6 max-w-4xl mx-auto">
       <p class="font-['Tenor_Sans'] text-[18px] lg:text-[25px] leading-relaxed text-[#142C12] text-center">
         {{ hero.topText }}

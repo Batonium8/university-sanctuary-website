@@ -21,4 +21,13 @@ export default defineConfig({
       'swiper/css/bundle': path.resolve(__dirname, 'node_modules/swiper/swiper-bundle.css'),
     },
   },
+  server: {
+    proxy: {
+      '/sanatorium': {
+        target: 'https://sites.creatrix-digital.ru',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
 })

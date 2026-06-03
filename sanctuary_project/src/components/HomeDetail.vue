@@ -1,12 +1,30 @@
 <template>
-  <section class="py-12 md:py-16 px-4 sm:px-6 lg:px-8 bg-[#EFE6D7] !pt-32">
+  <section class="py-12 md:py-16 px-4 sm:px-6 lg:px-8 bg-[#EFE6D7] !pt-32 min-h-screen">
     <div class="max-w-6xl mx-auto">
-      <div class="flex flex-col lg:flex-row gap-8 lg:gap-12">
 
-        <!-- Левая колонка: Галерея изображений -->
+      <div v-if="loading" class="flex flex-col items-center justify-center py-20">
+        <p class="font-['Montserrat'] text-[#142C12] text-lg animate-pulse">
+          Загрузка информации о номере...
+        </p>
+      </div>
+
+      <div v-else-if="error" class="flex flex-col items-center justify-center py-20">
+        <p class="font-['Montserrat'] text-red-600 text-lg text-center mb-4">
+          {{ error }}
+        </p>
+        <button
+          @click="loadHome(route.params.id)"
+          class="font-['Montserrat'] font-medium text-white px-6 py-2.5 rounded-md text-sm cursor-pointer transition-all hover:opacity-90 bg-[#777C5C]"
+        >
+          Попробовать снова
+        </button>
+      </div>
+
+      <div v-else-if="home" class="flex flex-col lg:flex-row gap-8 lg:gap-12">
+
         <div class="lg:w-1/2">
-          <!-- Главное фото -->
-          <div class="rounded-lg overflow-hidden mb-3 bg-[#D9D0C1]">
+
+          <div v-if="home.images && home.images.length" class="rounded-lg overflow-hidden mb-3 bg-[#D9D0C1]">
             <img
               :src="home.images[0]"
               :alt="home.name"
@@ -14,8 +32,7 @@
             />
           </div>
 
-          <!-- Миниатюры -->
-          <div class="grid grid-cols-3 gap-3">
+          <div v-if="home.images && home.images.length > 1" class="grid grid-cols-3 gap-3">
             <div
               v-for="(image, index) in home.images.slice(1, 4)"
               :key="index"
@@ -30,16 +47,14 @@
           </div>
         </div>
 
-        <!-- Правая колонка: Информация -->
         <div class="lg:w-1/2 flex flex-col">
-          <!-- Название -->
+
           <h1 class="text-3xl md:text-4xl font-light font-['Tenor_Sans'] text-[#142C12] tracking-wide mb-4">
             {{ home.name }}
           </h1>
 
-          <!-- Характеристики -->
           <div class="flex flex-wrap gap-4 md:gap-6 mb-6">
-            <div class="font-['Montserrat'] text-[#142C12] text-sm md:text-base">
+            <div v-if="home.capacity" class="font-['Montserrat'] text-[#142C12] text-sm md:text-base">
               <span class="font-medium">Вместимость:</span> {{ home.capacity }} человека
             </div>
             <div v-if="home.area" class="font-['Montserrat'] text-[#142C12] text-sm md:text-base">
@@ -47,59 +62,77 @@
             </div>
           </div>
 
-          <!-- Описание -->
           <div class="flex-1 mb-8">
             <p class="font-['Montserrat'] text-[#142C12] text-sm md:text-base leading-relaxed text-justify">
               {{ home.description }}
             </p>
           </div>
 
-          <!-- Цена -->
-          <div class="mt-auto">
+          <div v-if="home.costs" class="mt-auto">
             <div class="text-3xl md:text-4xl font-light font-['Tenor_Sans'] text-[#142C12]">
               {{ formatPrice(home.costs) }}
             </div>
           </div>
         </div>
       </div>
+
     </div>
   </section>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import { getHomeById } from '@/api/homes';
+import { setSelectedHomeId } from '@/composables/useBooking';
 
 const route = useRoute();
-const homeId = ref(route.params.id);
 
-// Моковые данные (пока API не подключен)
-const home = ref({
-  id: homeId.value,
-  name: 'Стандартный номер',
-  description: 'Стандартный номер в нашем санатории идеально подходит для комфортного проживания двух человек. В номере вас ждет уютная двуспальная кровать, где можно расслабиться после насыщенного дня. Для вашего удобства предоставлены телевизор и холодильник, а также санузел с необходимыми принадлежностями. Особое удовольствие доставит балкон с живописным видом на природу, где можно насладиться свежим воздухом и прекрасными пейзажами. Стоимость проживания в стандартном номере составляет 3500 рублей за сутки. Мы создаем все условия для вашего отдыха и восстановления сил!',
-  images: [
-    '/src/img/rooms/standart-main.jpg',
-    '/src/img/rooms/standart-1.jpg',
-    '/src/img/rooms/standart-2.jpg',
-    '/src/img/rooms/standart-3.jpg',
-  ],
-  capacity: 2,
-  area: 24,
-  costs: 3500,
-});
+const home = ref(null);
+const loading = ref(false);
+const error = ref(null);
 
-// Форматирование цены
-const formatPrice = (price) => {
-  return `${price} руб`;
+const loadHome = async (id) => {
+  if (!id) return;
+
+  loading.value = true;
+  error.value = null;
+  home.value = null;
+
+  try {
+    const response = await getHomeById(id);
+
+    // data.data - одна обертка от axios, вторая от Laravel
+    home.value = response.data.data;
+    setSelectedHomeId(home.value.id);
+  } catch (err) {
+    if (err.response?.status === 404) {
+      error.value = 'Номер не найден. Возможно, он был удалён.';
+    } else if (err.response?.status === 500) {
+      error.value = 'Ошибка сервера. Попробуйте позже.';
+    } else {
+      error.value = 'Не удалось загрузить информацию. Проверьте подключение к сети.';
+    }
+    console.error('Ошибка загрузки номера:', err);
+  } finally {
+    loading.value = false;
+  }
 };
 
-// Загрузка данных при изменении ID
-watch(() => route.params.id, (newId) => {
-  homeId.value = newId;
-  // Здесь будет запрос к API: await fetchHomeById(newId);
+onMounted(() => {
+  loadHome(route.params.id);
 });
-</script>
-<style scoped>
 
+watch(() => route.params.id, (newId) => {
+  loadHome(newId);
+});
+
+const formatPrice = (price) => {
+  const num = Number(price);
+  if (isNaN(num)) return `${price} руб`;
+  return `${num.toLocaleString('ru-RU')} руб`;
+};
+</script>
+
+<style scoped>
 </style>
