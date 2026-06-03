@@ -21,7 +21,7 @@
 
       <!-- Форма -->
       <form
-        class="w-full max-w-2xl rounded-lg p-6 md:p-8 overflow-y-auto mb-2 bg-[#777C5C]"
+        class="w-full max-w-3xl rounded-lg p-6 md:p-8 overflow-y-auto mb-2 bg-[#777C5C]"
         @submit.prevent="handleSubmit"
         novalidate
       >

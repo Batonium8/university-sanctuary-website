@@ -10,17 +10,17 @@
     </div>
 
     <!-- Контент -->
-    <div class="flex-1 p-6 md:p-10 flex flex-col justify-between bg-[#7a8b6e] text-white">
+    <div class="flex-1 p-6 md:p-10 flex flex-col justify-between bg-[#777C5C] text-[#EFE6D7]">
       <div>
-        <h3 class="text-[28px] font-normal mb-4">{{ title }}</h3>
-        <p class="text-base mb-4 opacity-90">{{ capacity }}</p>
-        <p class="text-[15px] leading-relaxed opacity-90 mb-6">{{ description }}</p>
+        <h3 class="text-3xl font-normal mb-4 font-['Tenor_Sans']">{{ title }}</h3>
+        <p class="text-lg mb-4 opacity-90 font-['Montserrat']">{{ capacity }}</p>
+        <p class="text-lg leading-relaxed opacity-90 mb-6 font-['Montserrat']">{{ description }}</p>
       </div>
 
       <div class="flex justify-between items-center mt-auto">
         <span class="text-[28px] font-normal">{{ price }}</span>
         <button
-          class="bg-[#f5f0e8] text-[#7a8b6e] px-8 py-3 rounded-md text-base cursor-pointer transition-colors hover:bg-[#ebe5db]"
+          class="bg-[#EFE6D7] text-[#777C5C] px-8 py-3 rounded-[11px] text-xl cursor-pointer transition-colors hover:bg-[#F7F0E4]"
           @click="$emit('details-click')"
         >
           Подробнее
