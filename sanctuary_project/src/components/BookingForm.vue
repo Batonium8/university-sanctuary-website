@@ -9,26 +9,24 @@
 
     <!-- Оверлей -->
     <div
-      class="absolute inset-0 w-full h-full"
-      style="background-color: #EFE6D7; opacity: 0.5;"
+      class="absolute inset-0 w-full h-full bg-[#EFE6D7]/50"
     ></div>
 
     <!-- Контент -->
     <div class="relative z-10 h-full max-w-350 mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center py-6">
       <!-- Заголовок -->
-      <h2 class="text-3xl md:text-4xl font-light text-center font-['Tenor_Sans'] text-[#142C12] tracking-wide mb-4">
+      <h2 class="text-3xl md:text-4xl font-semibold text-center font-['Tenor_Sans'] text-[#142C12] tracking-wide mb-8">
         Забронировать отдых
       </h2>
 
       <!-- Форма -->
       <form
-        class="w-full max-w-2xl rounded-lg p-6 md:p-8 overflow-y-auto"
-        style="background-color: #6B7F5E;"
+        class="w-full max-w-2xl rounded-lg p-6 md:p-8 overflow-y-auto mb-2 bg-[#777C5C]"
         @submit.prevent="handleSubmit"
         novalidate
       >
         <!-- Описание -->
-        <p class="font-['Montserrat'] text-white text-sm md:text-base text-center mb-4 leading-relaxed">
+        <p class="font-['Montserrat'] text-[#EFE6D7] text-sm md:text-base text-center mb-4 leading-relaxed">
           Пожалуйста, заполните форму ниже для бронирования вашего отдыха в нашем санатории.
         </p>
 
@@ -164,8 +162,7 @@
         <div class="flex justify-center">
           <button
             type="submit"
-            class="font-['Montserrat'] font-medium text-[#6B7F5E] px-10 py-3 rounded-md text-base cursor-pointer transition-all hover:bg-white hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-            style="background-color: #f5f0e8;"
+            class="font-['Tenor_Sans'] font-medium text-[#777C5C] px-10 py-3 rounded-[11px] text-xl md:text-2xl cursor-pointer transition-all hover:bg-[#F7F0E4] hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed bg-[#EFE6D7]"
             :disabled="isSubmitting"
           >
             {{ isSubmitting ? 'Отправка...' : 'Забронировать' }}
@@ -173,7 +170,7 @@
         </div>
 
         <!-- Сообщение об успехе -->
-        <div v-if="successMessage" class="mt-4 text-center font-['Montserrat'] text-white text-sm bg-green-700/50 rounded-lg p-3">
+        <div v-if="successMessage" class="mt-4 text-center font-['Montserrat'] text-white text-sm bg-[#9FA679]/50 rounded-lg p-3">
           {{ successMessage }}
         </div>
       </form>
@@ -201,7 +198,8 @@ const form = reactive({
 const errors = reactive({});
 const isSubmitting = ref(false);
 const successMessage = ref('');
-const bgImg = 'src/img/bg/78d23bb27f6e27fdd19465b67210c025b56cba7c.jpg'
+const bgImg = 'src/img/bg/78d23bb27f6e27fdd19465b67210c025b56cba7c.jpg';
+
 const roomTypes = [
   { value: 'standard', label: 'Стандартный номер' },
   { value: 'semi-lux', label: 'Полулюкс' },
@@ -221,81 +219,95 @@ const getGuestsWord = (n) => {
   return 'человек';
 };
 
+// ============================================
+// ПРАВИЛА ВАЛИДАЦИИ
+// ============================================
+
+const validationRules = {
+  fullName: {
+    required: 'Введите ФИО',
+    validate: (value) => {
+      const trimmed = value.trim();
+      if (trimmed.length < 2) return 'ФИО должно содержать минимум 2 символа';
+      if (!/^[а-яА-ЯёЁa-zA-Z\s-]+$/.test(trimmed)) return 'ФИО должно содержать только буквы';
+      return null;
+    },
+  },
+
+  phone: {
+    required: 'Введите номер телефона',
+    validate: (value) => {
+      if (!/^[\d\s\-\+\(\)]{10,}$/.test(value.trim())) {
+        return 'Введите корректный номер телефона';
+      }
+      return null;
+    },
+  },
+
+  email: {
+    required: 'Введите email',
+    validate: (value) => {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())) {
+        return 'Введите корректный email';
+      }
+      return null;
+    },
+  },
+
+  checkIn: {
+    required: 'Выберите дату заезда',
+  },
+
+  checkOut: {
+    required: 'Выберите дату выезда',
+  },
+
+  guests: {
+    required: 'Выберите количество человек',
+  },
+
+  roomType: {
+    required: 'Выберите тип номера',
+  },
+
+  agree: {
+    required: 'Необходимо дать согласие',
+  },
+};
+
+// ============================================
+// ВАЛИДАЦИЯ ПОЛЕЙ
+// ============================================
+
 const validateField = (field) => {
-  switch (field) {
-    case 'fullName':
-      if (!form.fullName.trim()) {
-        errors.fullName = 'Введите ФИО';
-      } else if (form.fullName.trim().length < 2) {
-        errors.fullName = 'ФИО должно содержать минимум 2 символа';
-      } else if (!/^[а-яА-ЯёЁa-zA-Z\s-]+$/.test(form.fullName.trim())) {
-        errors.fullName = 'ФИО должно содержать только буквы';
-      } else {
-        delete errors.fullName;
-      }
-      break;
+  const value = form[field];
+  const rule = validationRules[field];
 
-    case 'phone':
-      if (!form.phone.trim()) {
-        errors.phone = 'Введите номер телефона';
-      } else if (!/^[\d\s\-\+\(\)]{10,}$/.test(form.phone.trim())) {
-        errors.phone = 'Введите корректный номер телефона';
-      } else {
-        delete errors.phone;
-      }
-      break;
+  if (!rule) return;
 
-    case 'email':
-      if (!form.email.trim()) {
-        errors.email = 'Введите email';
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
-        errors.email = 'Введите корректный email';
-      } else {
-        delete errors.email;
-      }
-      break;
+  // Проверка на пустоту
+  const isEmpty = typeof value === 'boolean' ? !value : !String(value).trim();
 
-    case 'checkIn':
-      if (!form.checkIn) {
-        errors.checkIn = 'Выберите дату заезда';
-      } else {
-        delete errors.checkIn;
-        validateDates();
-      }
-      break;
+  if (isEmpty) {
+    errors[field] = rule.required;
+    return;
+  }
 
-    case 'checkOut':
-      if (!form.checkOut) {
-        errors.checkOut = 'Выберите дату выезда';
-      } else {
-        delete errors.checkOut;
-        validateDates();
-      }
-      break;
+  // Дополнительная валидация, если есть
+  if (rule.validate) {
+    const error = rule.validate(value);
+    if (error) {
+      errors[field] = error;
+    } else {
+      delete errors[field];
+    }
+  } else {
+    delete errors[field];
+  }
 
-    case 'guests':
-      if (!form.guests) {
-        errors.guests = 'Выберите количество человек';
-      } else {
-        delete errors.guests;
-      }
-      break;
-
-    case 'roomType':
-      if (!form.roomType) {
-        errors.roomType = 'Выберите тип номера';
-      } else {
-        delete errors.roomType;
-      }
-      break;
-
-    case 'agree':
-      if (!form.agree) {
-        errors.agree = 'Необходимо дать согласие';
-      } else {
-        delete errors.agree;
-      }
-      break;
+  // Специальная проверка для дат
+  if (field === 'checkIn' || field === 'checkOut') {
+    validateDates();
   }
 };
 
@@ -304,21 +316,31 @@ const clearError = (field) => {
 };
 
 const validateDates = () => {
-  if (form.checkIn && form.checkOut) {
-    if (new Date(form.checkOut) <= new Date(form.checkIn)) {
-      errors.checkOut = 'Дата выезда должна быть позже даты заезда';
-    } else {
-      delete errors.checkOut;
-    }
+  if (!form.checkIn || !form.checkOut) return;
+
+  const checkInDate = new Date(form.checkIn);
+  const checkOutDate = new Date(form.checkOut);
+
+  if (checkOutDate <= checkInDate) {
+    errors.checkOut = 'Дата выезда должна быть позже даты заезда';
+  } else {
+    delete errors.checkOut;
   }
 };
 
 const validateAll = () => {
-  const fields = ['fullName', 'phone', 'email', 'checkIn', 'checkOut', 'guests', 'roomType', 'agree'];
-  fields.forEach(validateField);
+  // Валидируем все поля
+  Object.keys(validationRules).forEach(validateField);
+
+  // Дополнительная проверка дат
   validateDates();
+
   return Object.keys(errors).length === 0;
 };
+
+// ============================================
+// ОТПРАВКА ФОРМЫ
+// ============================================
 
 const handleSubmit = () => {
   if (!validateAll()) {
@@ -337,9 +359,9 @@ const handleSubmit = () => {
     isSubmitting.value = false;
     successMessage.value = 'Ваша заявка успешно отправлена! Мы свяжемся с вами в ближайшее время.';
 
+    // Сброс формы
     Object.keys(form).forEach(key => {
-      if (key === 'agree') form[key] = false;
-      else form[key] = '';
+      form[key] = key === 'agree' ? false : '';
     });
   }, 1500);
 };
@@ -349,10 +371,9 @@ const handleSubmit = () => {
 .booking-input {
   width: 100%;
   padding: 12px 16px;
-  background-color: transparent;
   border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 6px;
-  color: white;
+  color: #EFE6D7;
   font-family: 'Montserrat', sans-serif;
   font-size: 15px;
   transition: all 0.3s ease;
